@@ -1,0 +1,26 @@
+<table>
+  <tr *ngFor="let row of (gameState$ | async)?.street; let r = index">
+    <td *ngFor="let position of row.split(''); let p = index">
+      <div 
+        *ngIf="position !== ' '" 
+        class="car"
+        [ngClass]="{
+          'blue': position == 'b',
+          'red': position == 'r',
+          'green': position == 'g'}">
+      </div>
+    </td>
+  </tr>
+</table>
+
+<button (click)="onStartClick()">start</button>
+<button (click)="onStopClick()">stop</button>
+
+<div *ngIf="(gameState$ | async)?.status === 'PLAY'; else gameOver">
+  Score: {{(gameState$ | async)?.score}}
+</div>
+
+<ng-template #gameOver>
+  Game Over, you reached   {{(gameState$ | async)?.score}}
+</ng-template>
+  

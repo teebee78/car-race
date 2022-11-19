@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  font-size: larger;
+
+  table {
+    background-color: #777777;
+    tr {
+      td {
+        border-left: 1px dashed whitesmoke;
+        height: 1.5em;
+        min-width: 1em;
+        vertical-align: middle;
+
+        &:last-child{
+          border-right: 1px dashed whitesmoke;
+        }
+
+        .car {
+          background-color: whitesmoke;
+          height: 1.25em;
+          width: 0.75em;
+          border-radius: 0.25em;
+
+          &.blue {
+            background-color: blue;
+          }
+
+          &.red {
+            background-color: red;
+          }
+
+          &.green {
+            background-color: green;
+          }
+        }
+      }
+    }
+  }
+}
