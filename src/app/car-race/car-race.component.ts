@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, forwardRef, HostListener, OnInit } 
 import { BehaviorSubject, finalize, interval, map, merge, Observable, of, scan, shareReplay, Subject, switchMapTo, takeUntil, takeWhile, tap, timer } from 'rxjs';
 
 type Direction = 'FORWARD' | 'LEFT' | 'RIGHT';
-type GameStatus = 'PLAY' | 'GAME_OVER';
+type GameStatus = 'INITIALIZED' | 'PLAY' | 'GAME_OVER';
 
 @Component({
   selector: 'app-car-race',
@@ -60,7 +60,7 @@ export class GameState {
       street.push(' '.repeat(lanes));
     }
     street.push(replaceCharAt(' '.repeat(lanes), lanes / 2, 'p'));
-    return new GameState('PLAY', 0, street);
+    return new GameState('INITIALIZED', 0, street);
   }
 
   constructor(public status: GameStatus, public score: number, public street: string[]) {
