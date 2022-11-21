@@ -1,6 +1,6 @@
-import { ThisReceiver } from '@angular/compiler';
-import { ChangeDetectionStrategy, Component, forwardRef, HostListener, OnInit } from '@angular/core';
-import { BehaviorSubject, finalize, interval, map, merge, Observable, of, scan, shareReplay, Subject, switchMapTo, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
+import { BehaviorSubject, interval, map, merge, Observable, scan, shareReplay, Subject, switchMapTo, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { replaceCharAt } from '../util/string.util';
 
 type Direction = 'FORWARD' | 'LEFT' | 'RIGHT';
 type GameStatus = 'INITIALIZED' | 'PLAY' | 'GAME_OVER';
@@ -120,10 +120,4 @@ export class GameState {
   private playersCarPosition(): number {
     return this.street[this.street.length - 1].indexOf('p');
   }
-}
-
-function replaceCharAt(aString: string, index: number, replacement: string): string {
-  return aString.substring(0, index)
-    + replacement
-    + aString.substring(index + 1, aString.length);
 }
