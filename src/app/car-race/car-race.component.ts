@@ -3,7 +3,7 @@ import { BehaviorSubject, interval, map, merge, Observable, scan, shareReplay, S
 import { replaceCharAt } from '../util/string.util';
 
 type Direction = 'FORWARD' | 'LEFT' | 'RIGHT';
-type GameStatus = 'INITIALIZED' | 'PLAY' | 'GAME_OVER';
+type GameStatus = 'INITIALIZED' | 'PLAY' | 'GAME_OVER';
 
 @Component({
   selector: 'app-car-race',
@@ -77,7 +77,6 @@ export class GameState {
   private forward(): GameState {
     const playersCarPosition = this.playersCarPosition();
     if (this.street[this.street.length - 2][playersCarPosition] !== ' ') {
-      console.log('CRASH', playersCarPosition, this.street[this.street.length - 2][playersCarPosition], this.street);
       return new GameState('GAME_OVER', this.score, this.street);
     }
 
@@ -88,7 +87,6 @@ export class GameState {
       : ' '.repeat(this.street[0].length);
 
     var newStreet = [newLine, ... this.street.slice(0, -1)];
-    // TODO detect crashes
     var last = newStreet[newStreet.length - 1];
     var newLast = last.substring(0, playersCarPosition) + 'p' + last.substring(playersCarPosition+ 1, newStreet.length - 1);
     newStreet[newStreet.length - 1] = newLast;
@@ -96,25 +94,23 @@ export class GameState {
     return new GameState('PLAY', this.score + 1, newStreet);
   }
 
-  private randomColor(): string {
-    const random = Math.floor(Math.random() * 3);
-    return ['r', 'b', 'g'][random];
-  }
-
   private steer(steerAmount: number): GameState {
     const playersCarPosition = this.playersCarPosition();
     var newCarPosition = Math.max(0, Math.min(playersCarPosition+ steerAmount, this.street[0].length - 1));
     if (newCarPosition !== playersCarPosition && this.street[this.street.length - 1][newCarPosition] !== ' ') {
-      console.log('CRASH 2');
       return new GameState('GAME_OVER', this.score, this.street);
     }
     var newStreet = [... this.street];
     const last = newStreet[newStreet.length - 1];
-    // TODO look for crashes
     const lastWithoutPlayer = replaceCharAt(last, playersCarPosition, ' ');
     newStreet[newStreet.length - 1] = replaceCharAt(lastWithoutPlayer, newCarPosition, 'p');
 
     return new GameState('PLAY', this.score, newStreet);
+  }
+
+  private randomColor(): string {
+    const random = Math.floor(Math.random() * 3);
+    return ['r', 'b', 'g'][random];
   }
 
   private playersCarPosition(): number {
