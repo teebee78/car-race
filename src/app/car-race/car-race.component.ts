@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angul
 import { BehaviorSubject, interval, map, merge, Observable, scan, shareReplay, Subject, switchMapTo, takeUntil, takeWhile, tap, timer } from 'rxjs';
 import { replaceCharAt } from '../util/string.util';
 
-type Direction = 'FORWARD' | 'LEFT' | 'RIGHT';
+type Direction = 'FORWARD' | 'LEFT' | 'RIGHT' | 'STOP';
 type GameStatus = 'INITIALIZED' | 'PLAY' | 'GAME_OVER';
 
 @Component({
@@ -13,11 +13,10 @@ type GameStatus = 'INITIALIZED' | 'PLAY' | 'GAME_OVER';
 })
 export class CarRaceComponent implements OnInit {
 
-  private stopClicks$ = new Subject<void>();
   public ticks$?: Observable<number>;
   public gameState$: Observable<GameState> = new BehaviorSubject(GameState.initialize(20, 10));
 
-  private steer$ = new Subject<Direction>();
+  private commands$ = new Subject<Direction>();
 
   constructor() {
   }
@@ -27,28 +26,27 @@ export class CarRaceComponent implements OnInit {
 
   @HostListener('document:keyup.ArrowLeft', ['$event'])
   onLeft(event: any) {
-    this.steer$.next('LEFT');
+    this.commands$.next('LEFT');
   }
 
   @HostListener('document:keyup.ArrowRight', ['$event'])
   onRight(event: any) {
-    this.steer$.next('RIGHT');
+    this.commands$.next('RIGHT');
+  }
+
+  onStopClick() {
+    this.commands$.next('STOP');
   }
 
   onStartClick() {
     this.gameState$ = merge(
       interval(150).pipe(map<number, Direction>((_) => 'FORWARD')),
-      this.steer$
+      this.commands$
     ).pipe(
       scan((current, direction) => current.move(direction), GameState.initialize(20, 10)),
       takeWhile(gameState => gameState.status === 'PLAY', true),
       shareReplay(),
-      takeUntil(this.stopClicks$)
     );
-  }
-
-  onStopClick() {
-    this.stopClicks$.next();
   }
 }
 
@@ -71,7 +69,12 @@ export class GameState {
       case 'FORWARD': return this.forward();
       case 'LEFT': return this.steer(-1);
       case 'RIGHT': return this.steer(1);
+      case 'STOP': return this.stop();
     }
+  }
+
+  private stop(): GameState {
+    return new GameState('GAME_OVER', this.score, this.street);
   }
 
   private forward(): GameState {
